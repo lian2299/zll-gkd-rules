@@ -11,8 +11,7 @@ export default defineGkdApp({
       rules: [
         {
           activityIds: ['com.taobao.tao.welcome.Welcome'],
-          matches:
-            '[vid="poplayer_native_state_center_layout_frame_id"] > [desc="关闭按钮"][clickable=true]',
+          matches: '[desc="关闭按钮"][clickable=true]',
         },
       ],
     },
