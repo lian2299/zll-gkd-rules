@@ -7,13 +7,9 @@ export default defineGkdApp({
     {
       key: 1,
       name: '活动弹窗',
-      desc: '关闭首页、我的淘宝中的优惠券等活动弹窗',
+      desc: '关闭淘宝各页面中同类容器内的活动弹窗',
       rules: [
         {
-          activityIds: [
-            'com.taobao.tao.welcome.Welcome',
-            'com.taobao.TBMainActivity',
-          ],
           matches:
             '[vid="poplayer_native_state_center_layout_frame_id"] > [desc="关闭按钮"][clickable=true]',
         },
