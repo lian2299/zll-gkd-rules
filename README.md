@@ -1,5 +1,24 @@
 # subscription-template
 
+## 本仓库的自动发布
+
+修改 `src` 下的规则后，提交并推送到 `main` 即可。GitHub Actions 的
+`build_release` 会自动格式化、检查、构建，将 `dist` 产物提交回 `main`，
+并在订阅版本变化时创建 Release；无需先在本地执行 `pnpm build`。
+其他分支的推送仅检查和修复格式，不发布订阅。仍可在 Actions 页面手动运行发布。
+
+固定订阅地址：
+
+```text
+https://raw.githubusercontent.com/lian2299/zll-gkd-rules/main/dist/gkd.json5
+```
+
+该地址始终指向主分支最新构建的订阅。私有仓库不支持通过此地址匿名读取，
+需要公开仓库或另外提供手机可访问的订阅托管地址。
+云端会产生自动提交，后续修改前先执行 `git pull --ff-only` 同步。
+
+以下为上游模板说明，其中手动发布步骤是本仓库的可选方式。
+
 GKD 订阅模板, 此仓库方便您直接构建自己订阅, 点击右上角 [Use this template](https://github.com/new?template_name=subscription-template&template_owner=gkd-kit) 即可使用
 
 ## 配置环境

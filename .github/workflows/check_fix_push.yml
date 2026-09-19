@@ -2,8 +2,8 @@ name: check_fix_push
 
 on:
   push:
-    branches:
-      - '**'
+    branches-ignore:
+      - main
 
 permissions: write-all
 

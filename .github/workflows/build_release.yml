@@ -1,14 +1,28 @@
 name: build_release
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: subscription-release-main
+  cancel-in-progress: false
 
 jobs:
   build_release:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - uses: actions/setup-node@v7
         with:
@@ -17,6 +31,16 @@ jobs:
       - uses: pnpm/action-setup@v6
 
       - run: pnpm install
+
+      - run: pnpm run format
+
+      - run: pnpm run lint
+
+      - name: Read previous subscription version
+        id: previous
+        run: |
+          version=$(node -e "import('@gkd-kit/tools').then((m) => m.stdoutGkdVersion());")
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
 
       - run: pnpm run build
 
@@ -30,25 +54,28 @@ jobs:
         run: |
           git config --local user.email github-actions[bot]@users.noreply.github.com
           git config --local user.name github-actions[bot]
-          git status
           git add .
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git commit -a -m "chore: v${{steps.version.outputs.version}}"
-        continue-on-error: true
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Git push
-        if: ${{ steps.commit.outcome == 'success' }}
+        if: steps.commit.outputs.changed == 'true'
         uses: ad-m/github-push-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-          tags: true
+          branch: main
 
       - name: Create Release
-        if: ${{ steps.commit.outcome == 'success' }}
+        if: steps.commit.outputs.changed == 'true' && steps.previous.outputs.version != steps.version.outputs.version
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.version.outputs.version }}
+          commitish: main
           release_name: Release ${{ steps.version.outputs.version }}
           body_path: ./dist/CHANGELOG.md
