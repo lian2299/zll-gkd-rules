@@ -17,5 +17,15 @@ export default defineGkdApp({
         },
       ],
     },
+    {
+      key: 2,
+      name: '广告关闭按钮',
+      desc: '点击 FrameLayout 内尺寸为 42×42 像素的 ImageView 广告关闭按钮',
+      rules: [
+        {
+          matches: 'FrameLayout ImageView[width=42][height=42]',
+        },
+      ],
+    },
   ],
 });
